@@ -1,2 +1,2 @@
-include ':app', ':java8', ':threetenabp', ':joda-time', ':joda-time-android'
+include ':app', ':java8', ':threetenabp'
 rootProject.name='ThreeTenKTX'

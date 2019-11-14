@@ -10,8 +10,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/java8" />
-            <option value="$PROJECT_DIR$/joda-time" />
-            <option value="$PROJECT_DIR$/joda-time-android" />
             <option value="$PROJECT_DIR$/threetenabp" />
           </set>
         </option>
