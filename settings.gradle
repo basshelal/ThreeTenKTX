@@ -1,2 +1,2 @@
-include ':app', ':java8', ':threetenabp'
+include ':java8', ':threetenabp'
 rootProject.name='ThreeTenKTX'
