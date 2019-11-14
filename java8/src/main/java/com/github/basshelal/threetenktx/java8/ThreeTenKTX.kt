@@ -1,14 +1,15 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNUSED")
 
-package uk.whitecrescent.threetenabp
+package com.github.basshelal.threetenktx.java8
 
-import org.threeten.bp.*
-import org.threeten.bp.chrono.ChronoLocalDate
-import org.threeten.bp.chrono.ChronoLocalDateTime
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.Temporal
-import org.threeten.bp.temporal.TemporalAmount
+import java.time.*
+import java.time.chrono.ChronoLocalDate
+import java.time.chrono.ChronoLocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalAmount
+
 import kotlin.random.Random
 
 inline val now: LocalDateTime
@@ -151,8 +152,10 @@ inline fun randomTimeBetween(from: LocalDateTime, to: LocalDateTime): LocalDateT
     var result = after
 
     while (result.isAfter(after) && result.isBefore(before)) {
-        if (result.isBefore(before)) result = randomTimeInFuture(before)
-        if (result.isAfter(after)) result = randomTimeInPast(after)
+        if (result.isBefore(before)) result =
+            randomTimeInFuture(before)
+        if (result.isAfter(after)) result =
+            randomTimeInPast(after)
     }
     return result
 }
