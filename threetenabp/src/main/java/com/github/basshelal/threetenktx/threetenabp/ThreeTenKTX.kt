@@ -1,4 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNUSED")
+@file:JvmMultifileClass
+@file:JvmName("ThreeTenKTX-ThreeTenABP")
 
 package com.github.basshelal.threetenktx.threetenabp
 
@@ -24,43 +26,43 @@ inline val yesterday: LocalDate
     get() = LocalDate.now().minusDays(1)
 
 inline val Number.nanos: Duration
-    get() = Duration.ofNanos(this.toLong())
+    get() = Duration.ofNanos(this.L)
 
 inline val Number.millis: Duration
-    get() = Duration.ofMillis(this.toLong())
+    get() = Duration.ofMillis(this.L)
 
 inline val Number.seconds: Duration
-    get() = Duration.ofSeconds(this.toLong())
+    get() = Duration.ofSeconds(this.L)
 
 inline val Number.minutes: Duration
-    get() = Duration.ofMinutes(this.toLong())
+    get() = Duration.ofMinutes(this.L)
 
 inline val Number.hours: Duration
-    get() = Duration.ofHours(this.toLong())
+    get() = Duration.ofHours(this.L)
 
 inline val Number.days: Duration
-    get() = Duration.ofDays(this.toLong())
+    get() = Duration.ofDays(this.L)
 
 inline val Number.weeks: Duration
-    get() = Duration.ofDays(7L * this.toLong())
+    get() = Duration.ofDays(7L * this.L)
 
 inline val Number.am: LocalTime
-    get() = LocalTime.of(this.toInt(), 0)
+    get() = LocalTime.of(this.I, 0)
 
 inline val Number.pm: LocalTime
-    get() = LocalTime.of(this.toInt() + 12, 0)
+    get() = LocalTime.of(this.I + 12, 0)
 
 inline val Pair<Number, Number>.am: LocalTime
-    get() = LocalTime.of(this.first.toInt(), this.second.toInt())
+    get() = LocalTime.of(this.first.I, this.second.I)
 
 inline val Pair<Number, Number>.pm: LocalTime
-    get() = LocalTime.of(this.first.toInt() + 12, this.second.toInt())
+    get() = LocalTime.of(this.first.I + 12, this.second.I)
 
 inline val Triple<Number, Number, Number>.am: LocalTime
-    get() = LocalTime.of(this.first.toInt(), this.second.toInt(), this.third.toInt())
+    get() = LocalTime.of(this.first.I, this.second.I, this.third.I)
 
 inline val Triple<Number, Number, Number>.pm: LocalTime
-    get() = LocalTime.of(this.first.toInt() + 12, this.second.toInt(), this.third.toInt())
+    get() = LocalTime.of(this.first.I + 12, this.second.I, this.third.I)
 
 inline val Duration.nanos: Long
     get() = this.toNanos()
@@ -90,7 +92,7 @@ inline val randomDuration: Duration
     get() = Duration.of(Random.nextLong(), ChronoUnit.MILLIS)
 
 inline val randomTime: LocalDateTime
-    get() = time(
+    get() = localDateTime(
         year = Random.nextInt(Year.MIN_VALUE, Year.MAX_VALUE),
         month = Random.nextInt(1, 13),
         dayOfMonth = Random.nextInt(1, 32),
@@ -106,31 +108,27 @@ inline val LocalDateTime.toEpoch: Long
 inline val LocalDateTime.rfcFormatted: String
     get() = this.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME)
 
-inline fun time(
+inline fun localDateTime(
     year: Int, month: Int, dayOfMonth: Int,
     hour: Int = 0, minute: Int = 0, second: Int = 0, nanoOfSecond: Int = 0
 ) =
     LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nanoOfSecond)!!
 
-inline fun time(
+inline fun localDateTime(
     year: Int, month: Month, dayOfMonth: Int,
     hour: Int = 0, minute: Int = 0, second: Int = 0, nanoOfSecond: Int = 0
 ) =
     LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nanoOfSecond)!!
-
-inline fun time(hour: Number, minute: Number) = Pair(hour, minute)
-
-inline fun time(hour: Number, minute: Number, second: Number) = Triple(hour, minute, second)
 
 inline infix fun LocalDate.at(time: LocalTime): LocalDateTime = this.atTime(time)
 
 inline infix fun LocalDate.at(hour: Int): LocalDateTime = this.atTime(hour, 0)
 
 inline infix fun LocalDate.at(pair: Pair<Number, Number>): LocalDateTime =
-    this.atTime(pair.first.toInt(), pair.second.toInt())
+    this.atTime(pair.first.I, pair.second.I)
 
 inline infix fun LocalDate.at(triple: Triple<Number, Number, Number>): LocalDateTime =
-    this.atTime(triple.first.toInt(), triple.second.toInt(), triple.third.toInt())
+    this.atTime(triple.first.I, triple.second.I, triple.third.I)
 
 inline infix fun Number.colon(other: Number): Pair<Number, Number> = this to other
 
@@ -149,10 +147,10 @@ inline infix fun ChronoLocalDateTime<*>.isEqualTo(other: ChronoLocalDateTime<*>)
     this.isEqual(other)
 
 inline fun coming(dayOfWeek: DayOfWeek) =
-    LocalDate.from(today.dayOfWeek + dayOfWeek.value.toLong())!!
+    LocalDate.from(today.dayOfWeek + dayOfWeek.value.L)!!
 
 inline fun last(dayOfWeek: DayOfWeek) =
-    LocalDate.from(today.dayOfWeek - dayOfWeek.value.toLong())!!
+    LocalDate.from(today.dayOfWeek - dayOfWeek.value.L)!!
 
 inline fun randomTimeInFuture(from: LocalDateTime = now): LocalDateTime = from + randomDuration
 
