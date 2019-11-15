@@ -23,6 +23,9 @@ inline val tomorrow: LocalDate
 inline val yesterday: LocalDate
     get() = LocalDate.now().minusDays(1)
 
+inline val Number.nanos: Duration
+    get() = Duration.ofNanos(this.toLong())
+
 inline val Number.millis: Duration
     get() = Duration.ofMillis(this.toLong())
 
@@ -59,11 +62,23 @@ inline val Triple<Number, Number, Number>.am: LocalTime
 inline val Triple<Number, Number, Number>.pm: LocalTime
     get() = LocalTime.of(this.first.toInt() + 12, this.second.toInt(), this.third.toInt())
 
+inline val Duration.nanos: Long
+    get() = this.toNanos()
+
 inline val Duration.millis: Long
     get() = this.toMillis()
 
 inline val Duration.secs: Double
     get() = (this.millis) / 1000.0
+
+inline val Duration.minutes: Long
+    get() = this.toMinutes()
+
+inline val Duration.hours: Long
+    get() = this.toHours()
+
+inline val Duration.days: Long
+    get() = this.toDays()
 
 inline val <D : ChronoLocalDate> ChronoLocalDateTime<D>.isInThePast: Boolean
     get() = now isAfter this
@@ -124,14 +139,14 @@ inline infix fun Temporal.till(other: Temporal): Duration = Duration.between(thi
 inline infix fun Duration.from(temporalAmount: TemporalAmount): Duration =
     Duration.from(temporalAmount)
 
-inline infix fun <D : ChronoLocalDate>
-        ChronoLocalDateTime<D>.isAfter(other: ChronoLocalDateTime<*>) = this.isAfter(other)
+inline infix fun ChronoLocalDateTime<*>.isAfter(other: ChronoLocalDateTime<*>) =
+    this.isAfter(other)
 
-inline infix fun <D : ChronoLocalDate>
-        ChronoLocalDateTime<D>.isBefore(other: ChronoLocalDateTime<*>) = this.isBefore(other)
+inline infix fun ChronoLocalDateTime<*>.isBefore(other: ChronoLocalDateTime<*>) =
+    this.isBefore(other)
 
-inline infix fun <D : ChronoLocalDate>
-        ChronoLocalDateTime<D>.isEqual(other: ChronoLocalDateTime<*>) = this.isEqual(other)
+inline infix fun ChronoLocalDateTime<*>.isEqualTo(other: ChronoLocalDateTime<*>) =
+    this.isEqual(other)
 
 inline fun coming(dayOfWeek: DayOfWeek) =
     LocalDate.from(today.dayOfWeek + dayOfWeek.value.toLong())!!
@@ -143,18 +158,27 @@ inline fun randomTimeInFuture(from: LocalDateTime = now): LocalDateTime = from +
 
 inline fun randomTimeInPast(from: LocalDateTime = now): LocalDateTime = from - randomDuration
 
+inline fun earliestOf(localDateTimes: Collection<LocalDateTime>): LocalDateTime {
+    return localDateTimes.min()!!
+}
+
+inline fun latestOf(localDateTimes: Collection<LocalDateTime>): LocalDateTime {
+    return localDateTimes.max()!!
+}
+
+inline fun earlierBetween(first: LocalDateTime, second: LocalDateTime): LocalDateTime {
+    return earliestOf(listOf(first, second))
+}
+
+inline fun laterBetween(first: LocalDateTime, second: LocalDateTime): LocalDateTime {
+    return latestOf(listOf(first, second))
+}
+
 inline fun randomTimeBetween(from: LocalDateTime, to: LocalDateTime): LocalDateTime {
-    if (from.isEqual(to)) return from
-    val before = if (from.isBefore(to)) from else to
-    val after = if (from.isAfter(to)) from else to
-
-    var result = after
-
-    while (result.isAfter(after) && result.isBefore(before)) {
-        if (result.isBefore(before)) result =
-            randomTimeInFuture(before)
-        if (result.isAfter(after)) result =
-            randomTimeInPast(after)
-    }
-    return result
+    if (from isEqualTo to) return from
+    val earlier = earlierBetween(from, to)
+    val later = laterBetween(from, to)
+    val duration = earlier till later
+    val randomDuration = Duration.of(Random.nextLong(duration.seconds), ChronoUnit.SECONDS)
+    return earlier + randomDuration
 }
