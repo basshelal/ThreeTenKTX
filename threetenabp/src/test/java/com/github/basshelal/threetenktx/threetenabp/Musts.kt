@@ -8,6 +8,8 @@ import org.opentest4j.AssertionFailedError
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 
+// Basic
+
 inline infix fun <T> T?.mustEqual(other: T?) {
     Assertions.assertEquals(this, other)
 }
@@ -15,6 +17,16 @@ inline infix fun <T> T?.mustEqual(other: T?) {
 inline infix fun <T> T?.mustNotEqual(other: T?) {
     Assertions.assertNotEquals(this, other)
 }
+
+inline infix fun <T> T?.mustBeSameAs(other: T?) {
+    Assertions.assertSame(this, other)
+}
+
+inline infix fun <T> T?.mustNotBeSameAs(other: T?) {
+    Assertions.assertNotSame(this, other)
+}
+
+// Comparables
 
 inline infix fun <T : Comparable<T>> T.mustBeLessThan(other: T) {
     (this < other) mustBe true
@@ -32,8 +44,25 @@ inline infix fun <T : Comparable<T>> T.mustBeGreaterThanOrEqualTo(other: T) {
     (this >= other) mustBe true
 }
 
+// Exceptions
+
 inline infix fun <T : () -> Any?> T.mustThrow(exception: KClass<out Throwable>) {
     Assertions.assertThrows(exception.java, { this() })
+}
+
+inline infix fun <T : () -> Any?> T.mustThrowOnly(exception: KClass<out Throwable>) {
+    try {
+        this()
+    } catch (t: Throwable) {
+        if (t::class != exception) {
+            throw AssertionFailedError(
+                "Expected to throw only ${exception.simpleName} " +
+                        "but actually did throw ${t::class.simpleName}", t
+            )
+        } else {
+            t.printStackTrace()
+        }
+    }
 }
 
 /**
@@ -89,6 +118,8 @@ inline fun <T : () -> Any?> T.mustNotThrowAnyException() {
     Assertions.assertAll(Executable { this() })
 }
 
+// Booleans and Predicates
+
 inline infix fun Boolean.mustBe(boolean: Boolean) {
     if (boolean) assertTrue else assertFalse
 }
@@ -105,6 +136,40 @@ inline infix fun Boolean.mustBe(predicate: () -> Boolean) {
     this mustBe predicate()
 }
 
+// Functions
+
+inline infix fun <reified R1, reified R2>
+        (() -> R1).mustHaveSameResultAs(other: () -> R2) {
+    this.invoke() mustEqual other.invoke()
+}
+
+inline infix fun <reified R1, reified R2>
+        (() -> R1).mustNotHaveSameResultAs(other: () -> R2) {
+    this.invoke() mustNotEqual other.invoke()
+}
+
+inline infix fun <reified R1, reified R2>
+        (() -> R1).mustHaveSameResultType(other: () -> R2) {
+    this.invoke() mustBeSameTypeAs other.invoke()
+}
+
+inline infix fun <reified R1, reified R2>
+        (() -> R1).mustNotHaveSameResultType(other: () -> R2) {
+    this.invoke() mustNotBeSameTypeAs other.invoke()
+}
+
+// Types
+
+inline infix fun <reified T, reified R> T.mustBeSameTypeAs(other: R) {
+    T::class mustEqual R::class
+}
+
+inline infix fun <reified T, reified R> T.mustNotBeSameTypeAs(other: R) {
+    T::class mustNotEqual R::class
+}
+
+// Collections
+
 inline fun <T> Collection<T>.mustBeEmpty() {
     this.isEmpty() mustBe true
 }
@@ -117,9 +182,25 @@ inline infix fun <T> Collection<T>.mustHaveSizeOf(size: Int) {
     this.size mustEqual size
 }
 
+inline infix fun <T> Collection<T>.mustNotHaveSizeOf(size: Int) {
+    this.size mustNotEqual size
+}
+
+inline infix fun <T> Collection<T>.mustHaveAllElementsEqualTo(other: T) {
+    this.forEach { it mustEqual other }
+}
+
+inline infix fun <T> Collection<T>.mustHaveAllElementsNotEqualTo(other: T) {
+    this.forEach { it mustNotEqual other }
+}
+
+// Ranges
+
 inline infix fun <T : Comparable<T>> T.mustBeIn(range: ClosedRange<T>) {
     (this in range) mustBe true
 }
+
+// Scope Functions (not Musts)
 
 /**
  * Runs the `first` block first then the `do` block, `first` is assumed to not throw any
@@ -150,6 +231,8 @@ inline fun <T : () -> Any?, R : () -> Any?> after(first: T, `do`: R) {
 inline fun <T> on(element: T, func: T.() -> Unit) {
     element.apply(func)
 }
+
+// Utility values
 
 inline val <T> T.ignoreResult: Unit
     get() = this as Unit
